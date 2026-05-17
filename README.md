@@ -1,49 +1,36 @@
-# ☕ CoffeeCraft - Symulator Kawiarni Rzemieślniczej
+# CoffeeCraft - Symulator Kawiarni
 
-To repozytorium zawiera mój projekt zaliczeniowy z przedmiotu Programowanie Obiektowe. Zamiast tworzyć kolejny standardowy system bankowy czy kalkulator, napisałem silnik symulujący działanie inteligentnej kawiarni.
+Projekt zaliczeniowy z przedmiotu Zaawansowane Programowanie Obiektowe. Aplikacja symuluje działanie kawiarni i została napisana w języku C# (.NET 8.0). 
 
-Program został napisany w języku **C# (.NET 8.0)**. Nie pobiera on danych ręcznie z klawiatury (przez `Console.ReadLine`) – zamiast tego działa jako zautomatyzowany scenariusz (Proof of Concept). Dzięki temu po jednym uruchomieniu w ułamku sekundy demonstruje on działanie wszystkich mechanizmów obiektowych i biznesowych, bez tracenia czasu na wpisywanie danych w konsoli.
+Zamiast interaktywnego pobierania danych od użytkownika (np. przez Console.ReadLine), program wykonuje z góry zaplanowany scenariusz. Taki zabieg pozwala w krótkim czasie zademonstrować wszystkie zaimplementowane mechanizmy obiektowe w konkretnym kontekście biznesowym, bez konieczności ręcznego wprowadzania danych.
 
-## 🏗️ Struktura projektu
-Projekt został celowo podzielony na dwa niezależne podzespoły (Assemblies), aby zademonstrować poprawną separację odpowiedzialności oraz widoczność kodu między modułami:
-1. **CoffeeCraft.Core (Biblioteka klas):** Rdzeń systemu. Zawiera abstrakcję, interfejsy i bazowe właściwości napojów.
-2. **CoffeeCraftApp (Aplikacja główna):** Warstwa wykonawcza, która symuluje działanie kawiarni, przyjmuje zamówienia i korzysta z biblioteki Core.
+## Struktura projektu
+Rozwiązanie składa się z dwóch powiązanych ze sobą projektów:
+1. CoffeeCraft.Core - biblioteka klas stanowiąca rdzeń systemu. Zawiera abstrakcję, interfejsy oraz logikę, która z założenia powinna być odseparowana od aplikacji głównej (enkapsulacja na poziomie modułów).
+2. CoffeeCraftApp - aplikacja konsolowa (uruchomieniowa), która korzysta z biblioteki Core, tworzy obiekty i symuluje proces obsługi zamówień.
 
----
+## Zrealizowane elementy programowania obiektowego
+W kodzie zaimplementowałem wszystkie zagadnienia wymagane w programie zajęć:
 
-## 🧩 Wykorzystane elementy obiektowości (Zgodnie z programem zajęć)
+* Klasy i struktury: Oprócz standardowych klas (np. Osoba), wykorzystałem strukturę WspolrzedneStolika do lżejszego przechowywania prostych danych.
+* Dziedziczenie i Polimorfizm: Klasa Kawa dziedziczy po abstrakcyjnej klasie NapojKofeinowy. Metoda WyswietlMetryczke() została oznaczona jako virtual w klasie bazowej i nadpisana (override) w klasie pochodnej.
+* Interfejsy i Abstrakcja: Wykorzystałem klasę abstrakcyjną oraz interfejs IPreparable, który definiuje kontrakt parzenia dla każdego napoju.
+* Konstruktory i kolejność inicjalizacji: Wykorzystałem słowo kluczowe base do wywołania konstruktora klasy bazowej. W klasie Kawa znajduje się również konstruktor statyczny, który uruchamia się tylko raz, przed konstruktorami instancji.
+* Właściwości i Indeksatory: Zastosowałem hermetyzację danych za pomocą właściwości z sekcjami get/set (np. zabezpieczenie przed ustawieniem ujemnej wartości). Zaimplementowałem też indeksator pozwalający na łatwy dostęp do tablicy baristów przypisanych do danej kawy.
+* Zdarzenia (Events) i Delegaty: Stworzyłem zdarzenie OnCoffeeReady. Powiadamia ono główny program o zakończeniu przygotowywania napoju, co pozwala na luźne powiązanie obiektów ze sobą.
+* Przeciążanie operatorów: Przeciążony operator dodawania (+) pozwala na złączenie dwóch obiektów typu Kawa w nowy napój, sumując przy tym ich poziom kofeiny.
+* Typy ogólne (Generics): Klasa Zamowienie<T> została napisana jako generyczna, co pozwala na bezpieczne typologicznie przechowywanie i przetwarzanie zamówień.
+* Modyfikatory dostępu: Zastosowałem modyfikatory takie jak protected (dla pól klasy bazowej) oraz internal (dla ukrycia konkretnej klasy wewnątrz projektu Core, aby nie była widoczna dla aplikacji głównej).
 
-W kodzie zaimplementowałem wszystkie wymagane zagadnienia. Poniżej znajduje się zestawienie, gdzie można je znaleźć:
+## Elementy wykraczające poza program podstawowy
+W celu poszerzenia funkcjonalności i zademonstrowania znajomości platformy .NET, zastosowałem dodatkowo:
 
-*   **Klasy i struktury:** System personelu oparty na klasie `Osoba` oraz lekka struktura `WspolrzedneStolika` dla lokalizacji klientów.
-*   **Dziedziczenie i Polimorfizm:** Klasa `Kawa` dziedziczy po bazowej klasie `NapojKofeinowy`. Nadpisałem też wirtualną metodę `WyswietlMetryczke()` używając `override`, aby kawa wyświetlała własne, unikalne statystyki (np. powierzchnię latte art).
-*   **Interfejsy i Abstrakcja:** Bazą jest klasa abstrakcyjna (`abstract`). Dodatkowo wdrożyłem interfejs `IPreparable`, który wymusza na napojach posiadanie metody parzenia i czasu przygotowania.
-*   **Konstruktory (i kolejność inicjalizacji):** Użyłem słowa kluczowego `base(...)` do przekazania parametrów do klasy bazowej. W klasie Kawa wykorzystałem **konstruktor statyczny**, który uruchamia się jako pierwszy i konfiguruje młynek.
-*   **Właściwości i Indeksatory:** Właściwość z blokadą ujemnej wartości pianki (enkapsulacja). Użyłem też **indeksatora** (`this[int index]`), dzięki któremu mogę wyciągać członków załogi pracujących nad kawą w intuicyjny sposób: `espresso[0]`.
-*   **Delegacje i Zdarzenia:** Komunikacja z klientem odbywa się przez zdarzenie `OnCoffeeReady` (Publisher-Subscriber). Kiedy ekspres kończy parzyć, odpala zdarzenie, a konsola "wysyła" powiadomienie SMS.
-*   **Przeciążanie operatorów:** Operator `+` potrafi dodawać do siebie obiekty kawy. Dzięki temu instrukcja `espresso + flatWhite` tworzy nowy napój typu "Double Shot" i sumuje ich kofeinę.
-*   **Typy ogólne (Generics):** Koszyk zamówień to generyczna, bezpieczna typologicznie klasa `Zamowienie<T>`.
-*   **Modyfikatory dostępu:** Zastosowałem `protected` do ukrywania poziomu kofeiny oraz `internal` do ukrycia tajnej receptury w osobnym assembly (Aplikacja główna nie ma do niej dostępu).
+* Asynchroniczność (Async/Await): Symulacja nagrzewania bojlera ekspresu używa operacji Task.Delay, co demonstruje nieblokowanie głównego wątku aplikacji.
+* Refleksję i atrybuty (Custom Attributes): Klasa Kawa została oznaczona autorskim atrybutem metadanych. Program na koniec swojego działania wykorzystuje refleksję do zbadania własnego kodu w czasie rzeczywistym i wypisania zadeklarowanych w klasie metod.
+* Metody rozszerzające (Extension Methods): Dodałem własną metodę do systemowej, wbudowanej klasy string, co pozwala na prostą analizę językową ciągów znakowych.
 
----
-
-## ⭐ Wyjście poza program (Zaawansowane mechanizmy platformy .NET)
-
-W celu zaprezentowania szerszego zrozumienia języka C#, zaimplementowałem trzy mechanizmy wykraczające poza standardowy program zajęć:
-
-### 1. Asynchroniczność (Async / Await)
-Symulacja nagrzewania bojlera w ekspresie działa asynchronicznie przy użyciu `async Task` oraz `await Task.Delay()`. Zamiast zamrażać główny wątek aplikacji, maszyna "nagrzewa się w tle", demonstrując prawidłowe zarządzanie wątkami procesora podczas operacji wejścia/wyjścia (I/O).
-
-### 2. Zaawansowana Refleksja i Własne Atrybuty (Custom Attributes)
-Stworzyłem autorski atrybut metadanych `[PremiumProduktAttribute]`. Na zakończenie działania programu, system przy użyciu mechanizmu **Refleksji** (klasy `Type` i `MethodInfo`) dynamicznie skanuje własny kod źródłowy, odczytuje ukryty atrybut i automatycznie mapuje wszystkie publiczne metody bez ich jawnego wywoływania.
-
-### 3. Metody Rozszerzające (Extension Methods)
-Rozszerzyłem wbudowaną, zamkniętą klasę `string` o własną logikę biznesową. Metoda `CzyZawieraSformulowanieGrzecznosciowe()` sprawdza kulturę językową klienta. Pozwala to na wstrzyknięcie własnego zachowania do systemowych typów danych.
-
----
-
-### ⚙️ Jak uruchomić?
-1. Sklonuj repozytorium na dysk.
-2. Otwórz plik `CoffeeCraftSystem.sln` w środowisku Visual Studio.
-3. Upewnij się, że projekt **CoffeeCraftApp** jest oznaczony jako startowy (Startup Project).
-4. Skompiluj i uruchom (Ctrl + F5).
+## Jak uruchomić projekt?
+1. Pobierz repozytorium na dysk.
+2. Otwórz plik CoffeeCraftSystem.sln w środowisku Visual Studio.
+3. Upewnij się, że projekt CoffeeCraftApp jest ustawiony jako projekt startowy (Startup Project).
+4. Skompiluj i uruchom aplikację (skrót Ctrl + F5).
