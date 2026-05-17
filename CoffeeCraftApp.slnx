@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CoffeeCraft.Core/CoffeeCraft.Core.csproj" />
+  <Project Path="CoffeeCraftApp/CoffeeCraftApp.csproj" />
+</Solution>
